@@ -1,0 +1,33 @@
+name: CI
+
+# The language of this service is decided in its own spec (ADR-012). Until the
+# implementation lands, this workflow guards what does not depend on the language:
+# the minimum content of a code repository (norm 5.1) and the absence of secrets.
+# When the code arrives, build and test steps are added here (Annex I).
+
+on:
+  pull_request:
+    branches: [develop, qa, main]
+
+permissions:
+  contents: read
+
+jobs:
+  base:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: The repository has its minimum content
+        run: |
+          for file in README.md .github/CODEOWNERS .gitignore .env.example; do
+            [ -f "$file" ] || { echo "missing $file"; exit 1; }
+          done
+
+      - name: No real environment file or key is versioned
+        run: |
+          if git ls-files | grep -E '(^|/)\.env$|\.pem$|(^|/)keys/'; then
+            echo "A real environment file or key is versioned"
+            exit 1
+          fi
