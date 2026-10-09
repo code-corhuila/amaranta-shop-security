@@ -1,0 +1,8 @@
+# Real environment files, keys and secrets are never versioned (norm 5.1 and rule 13).
+.env
+.env.*
+!.env.example
+keys/
+*.pem
+
+# Language-specific entries are added together with the implementation.
